@@ -5,6 +5,7 @@ import com.user.project.validationapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -27,4 +28,28 @@ public class UserService {
             System.out.println("User created");
         }
     }
+    public void updateUser(Long id, User user){
+
+        Optional<User> exist=userRepository.findById(id);
+
+        if (exist.isPresent()){
+            exist.get().setName(user.getName());
+            exist.get().setEmail(user.getEmail());
+            exist.get().setPassword(user.getPassword());
+            userRepository.save(exist.get());
+        }else {
+            System.out.println("Not user match de Id provided");
+        }
+
+
+    }
+    public void deleteUser(Long id){
+        Optional<User> exist=userRepository.findById(id);
+        if (exist.isPresent()){
+            userRepository.delete(exist.get());
+        }else {
+            System.out.println("Not user match the id provided");
+        }
+    }
+
 }
