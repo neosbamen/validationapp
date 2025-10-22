@@ -3,6 +3,8 @@ package com.user.project.validationapp.service;
 import com.user.project.validationapp.model.User;
 import com.user.project.validationapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -13,22 +15,22 @@ public class UserService {
     @Autowired
     UserRepository userRepository;
 
-    public List<User> allUserAsList(){
+    public ResponseEntity<List<User>> allUserAsList(){
 
-        return userRepository.findAll();
+        return new ResponseEntity<>(userRepository.findAll(),HttpStatus.OK);
     }
-    public void createUser(User user){
+    public ResponseEntity<String> createUser(User user){
 
-        boolean exist=allUserAsList().stream().anyMatch(e->e.getEmail().equals(user.getEmail()));
+        boolean exist= userRepository.findAll().stream().anyMatch(e->e.getEmail().equals(user.getEmail()));
 
         if (exist){
-            System.out.println("Email account used already");
+            return new ResponseEntity<>("Email account used already",HttpStatus.NOT_FOUND);
         }else {
             userRepository.save(user);
-            System.out.println("User created");
+           return new ResponseEntity<>("User created",HttpStatus.CREATED);
         }
     }
-    public void updateUser(Long id, User user){
+    public ResponseEntity<String> updateUser(Long id, User user){
 
         Optional<User> exist=userRepository.findById(id);
 
@@ -37,18 +39,20 @@ public class UserService {
             exist.get().setEmail(user.getEmail());
             exist.get().setPassword(user.getPassword());
             userRepository.save(exist.get());
+            return new ResponseEntity<>("User set successfully",HttpStatus.OK);
         }else {
-            System.out.println("Not user match de Id provided");
+            return new ResponseEntity<>("Not user match the Id provided",HttpStatus.CONFLICT);
         }
 
 
     }
-    public void deleteUser(Long id){
+    public ResponseEntity<String> deleteUser(Long id){
         Optional<User> exist=userRepository.findById(id);
         if (exist.isPresent()){
             userRepository.delete(exist.get());
+            return new ResponseEntity<>("User found and delete",HttpStatus.OK);
         }else {
-            System.out.println("Not user match the id provided");
+            return  new ResponseEntity<>("Not user match the id provided",HttpStatus.CONFLICT);
         }
     }
 
