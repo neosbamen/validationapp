@@ -1,23 +1,49 @@
 package com.user.project.validationapp.service;
 
 import com.user.project.validationapp.model.User;
+import com.user.project.validationapp.model.UserDTO;
 import com.user.project.validationapp.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+
+@RequiredArgsConstructor
 @Service
 public class UserService {
 
-    @Autowired
-    UserRepository userRepository;
 
-    public ResponseEntity<List<User>> allUserAsList(){
+    private final UserRepository userRepository;
 
-        return new ResponseEntity<>(userRepository.findAll(),HttpStatus.OK);
+    public ResponseEntity<Boolean> findUserByEmailAndPassword(User user){
+       User userExist=userRepository.findByEmailAndPassword(user.getEmail(), user.getPassword());
+
+       if (userExist!=null){
+
+           return new ResponseEntity<>(true,HttpStatus.OK);
+       }
+
+        return new ResponseEntity<>(false,HttpStatus.NOT_FOUND);
+    }
+    public ResponseEntity<List<UserDTO>> allUserAsList(){
+
+        List<UserDTO> userDTOList = new ArrayList<>();
+
+        userRepository.findAll().forEach(user -> {
+
+            UserDTO userDTO = new UserDTO();
+            userDTO.setId(user.getUserId());
+            userDTO.setName(user.getName());
+            userDTO.setEmail(user.getEmail());
+            userDTOList.add(userDTO);
+
+        });
+
+        return new ResponseEntity<>(userDTOList,HttpStatus.OK);
     }
     public ResponseEntity<String> createUser(User user){
 

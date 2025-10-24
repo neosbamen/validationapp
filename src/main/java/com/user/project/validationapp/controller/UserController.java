@@ -1,6 +1,7 @@
 package com.user.project.validationapp.controller;
 
 import com.user.project.validationapp.model.User;
+import com.user.project.validationapp.model.UserDTO;
 import com.user.project.validationapp.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,24 +14,33 @@ public class UserController {
 
     private final UserService userService;
 
+
     @GetMapping("/users")
-    public ResponseEntity<List<User>> allUserAsList(){
+    public ResponseEntity<List<UserDTO>> allUserAsList() {
         return userService.allUserAsList();
     }
 
     @PostMapping("/create")
-    public ResponseEntity<String> createUserC(@RequestBody User user){
+    public ResponseEntity<String> createUserC(@RequestBody User user) {
         return userService.createUser(user);
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<String> updateUserC(@PathVariable Long id, @RequestBody User user){
+    public ResponseEntity<String> updateUserC(@PathVariable Long id, @RequestBody User user) {
 
-        return userService.updateUser(id,user);
+        return userService.updateUser(id, user);
     }
 
     @DeleteMapping("/delete{id}")
-    public ResponseEntity<String> deleteUserC(@PathVariable Long id){
+    public ResponseEntity<String> deleteUserC(@PathVariable Long id) {
         return userService.deleteUser(id);
     }
+
+
+    @GetMapping("/validate")
+    public ResponseEntity<Boolean> findUser(@RequestBody User user) {
+
+        return userService.findUserByEmailAndPassword(user);
+    }
 }
+
